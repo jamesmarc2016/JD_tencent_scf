@@ -142,9 +142,6 @@ async function doChannelsListTask(taskId, taskType) {
   }
 }
 async function helpFriends() {
-  await updateInviteCode();
-  // if (!$.inviteCodes) await updateInviteCodeCDN();
-  await updateInviteCodeCDN('https://cdn.jsdelivr.net/gh/zero205/updateTeam@main/shareCodes/jd_updateSmallHomeInviteCode.json');
   if ($.inviteCodes && $.inviteCodes['inviteCode']) {
     for (let item of $.inviteCodes.inviteCode) {
       if (!item) continue
@@ -500,9 +497,11 @@ function createInviteUser() {
             if (data.head.code === 200) {
               if (data.body) {
                 if (data.body.id) {
-                  console.log(`\n您的${$.name}shareCode(每天都是变化的):【${data.body.id}】\n`);
-                  $.shareCode = data.body.id;
-                  $.newShareCodes.push({ 'code': data.body.id, 'token': $.token, cookie });
+                  if($.index < 7){
+                    console.log(`\n您的${$.name}shareCode(每天都是变化的):【${data.body.id}】\n`);
+                    $.shareCode = data.body.id;
+                    $.newShareCodes.push({ 'code': data.body.id, 'token': $.token, cookie });
+                  }
                 }
               }
             }
@@ -782,43 +781,7 @@ function login(userName) {
     })
   })
 }
-function updateInviteCode(url = 'https://cdn.jsdelivr.net/gh/zero205/updateTeam@main/shareCodes/jd_updateSmallHomeInviteCode.json') {
-  return new Promise(resolve => {
-    $.get({url}, async (err, resp, data) => {
-      try {
-        if (err) {
-          console.log(`${JSON.stringify(err)}`)
-        } else {
-          $.inviteCodes = JSON.parse(data);
-        }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve();
-      }
-    })
-  })
-}
-function updateInviteCodeCDN(url) {
-  return new Promise(async resolve => {
-    $.get({url, headers:{"User-Agent": $.isNode() ? (process.env.JD_USER_AGENT ? process.env.JD_USER_AGENT : (require('./USER_AGENTS').USER_AGENT)) : ($.getdata('JDUA') ? $.getdata('JDUA') : "jdapp;android;9.3.6;9;8363532363230343238303836333-43D2468336563316936636265356;network/wifi;model/MI 8;addressid/2688971613;aid/07aa8a790ce0988b;oaid/451bb37844a58e7f;osVer/28;appBuild/86560;partner/xiaomi001;eufv/1;jdSupportDarkMode/0;Mozilla/5.0 (Linux; Android 9; MI 8 Build/PKQ1-wesley_iui-19.09.05; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/045131 Mobile Safari/537.36")}}, async (err, resp, data) => {
-      try {
-        if (err) {
-          console.log(`${JSON.stringify(err)}`)
-          console.log(`${$.name} API请求失败，请检查网路重试`)
-        } else {
-          $.inviteCodes = JSON.parse(data);
-        }
-      } catch (e) {
-        $.logErr(e, resp)
-      } finally {
-        resolve();
-      }
-    })
-    await $.wait(3000)
-    resolve();
-  })
-}
+
 function taskUrl(url, body = {}) {
   return {
     url: `${JD_API_HOST}/${url}?body=${escape(body)}`,
