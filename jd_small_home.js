@@ -110,9 +110,12 @@ async function smallHome() {
   await helpFriends();
   if (!$.isUnLock) return;
   await createInviteUser();
-  await queryDraw();
-  await lottery();
-  await doAllTask();
+  if($.index < 7){
+    await queryDraw();
+    await lottery();
+    await doAllTask();
+  }
+  
   await queryByUserId();
   await queryFurnituresCenterList();
   // await showMsg();
